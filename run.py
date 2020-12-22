@@ -40,7 +40,7 @@ print('The OFA Network is ready.')
 if cuda_available:
     # path to the ImageNet dataset
     print("Please input the path to the ImageNet dataset.\n")
-    imagenet_data_path = input()
+    imagenet_data_path = "/youtu-public/imagenet/tfrecord"
 
     # if 'imagenet_data_path' is empty, download a subset of ImageNet containing 2000 images (~250M) for test
     if not os.path.isdir(imagenet_data_path):
