@@ -302,7 +302,7 @@ def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0',
             print('{}model'.format(i))
             platform_name = select_platform_name()
             net_id = select_netid(platform_name)
-            net, image_size = ofa_specialized(net_id=id, pretrained=True)
+            net, image_size = ofa_specialized(net_id=net_id, pretrained=True)
             nets.append(net)
         validate(nets, path, image_size, data_loader, batch_size, device)
 
