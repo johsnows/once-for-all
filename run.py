@@ -84,7 +84,7 @@ else:
     data_loader = None
     print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')
 if cuda_available:
-    net_id = evaluate_ofa_specialized(imagenet_data_path, data_loader, True)
+    net_id = evaluate_ofa_specialized(imagenet_data_path, data_loader, ensemble=True)
     print('Finished evaluating the pretrained sub-network: %s!' % net_id)
 else:
     print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')
