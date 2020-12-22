@@ -310,7 +310,7 @@ def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0',
     return net_id
 
 
-def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0', ensemble=False):
+def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensemble=False):
     net_id = {'pixel1_lat@143ms_top1@80.1_finetune@75', 'pixel1_lat@132ms_top1@79.8_finetune@75',
               'pixel1_lat@79ms_top1@78.7_finetune@75', 'pixel1_lat@58ms_top1@76.9_finetune@75',
               'pixel1_lat@40ms_top1@74.9_finetune@25', 'pixel1_lat@28ms_top1@73.3_finetune@25',
