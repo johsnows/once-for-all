@@ -347,7 +347,8 @@ def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensem
             team.append(i)
             net, image_size = ofa_specialized(net_id=net_id[j], pretrained=True)
             nets.append(net)
-            nets.append(net_id[i])
+            net, image_size = ofa_specialized(net_id=net_id[i], pretrained=True)
+            nets.append(net)
             acc = ensemble_validate(nets, path, image_size, data_loader, batch_size, device)
             if acc>best_acc:
                 best_acc=acc
