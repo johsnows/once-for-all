@@ -44,13 +44,13 @@ if cuda_available:
 
     print(os.path.isdir(imagenet_data_path))
     # if 'imagenet_data_path' is empty, download a subset of ImageNet containing 2000 images (~250M) for test
-    if not os.path.isdir(imagenet_data_path):
-        os.makedirs(imagenet_data_path, exist_ok=True)
-        download_url('https://hanlab.mit.edu/files/OnceForAll/ofa_cvpr_tutorial/imagenet_1k.zip', model_dir='data')
-        ! cd data && unzip imagenet_1k 1>/dev/null && cd ..
-        ! cp -r data/imagenet_1k/* $imagenet_data_path
-        ! rm -rf data
-        print('%s is empty. Download a subset of ImageNet for test.' % imagenet_data_path)
+    # if not os.path.isdir(imagenet_data_path):
+    #     os.makedirs(imagenet_data_path, exist_ok=True)
+    #     download_url('https://hanlab.mit.edu/files/OnceForAll/ofa_cvpr_tutorial/imagenet_1k.zip', model_dir='data')
+    #     ! cd data && unzip imagenet_1k 1>/dev/null && cd ..
+    #     ! cp -r data/imagenet_1k/* $imagenet_data_path
+    #     ! rm -rf data
+    #     print('%s is empty. Download a subset of ImageNet for test.' % imagenet_data_path)
 
     print('The ImageNet dataset files are ready.')
 else:
