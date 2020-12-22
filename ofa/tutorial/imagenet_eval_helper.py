@@ -100,7 +100,7 @@ def ensemble_validate(nets, path, image_size, data_loader, batch_size=100, devic
                         output =net(images)
                     else:
                         output+=net(images)
-                ouput = ouput/n
+                output = output/n
                 loss = criterion(output, labels)
                 # measure accuracy and record loss
                 acc1, acc5 = accuracy(output, labels, topk=(1, 5))
