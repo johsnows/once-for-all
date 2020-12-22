@@ -311,7 +311,7 @@ def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0',
 
 
 def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensemble=False):
-    net_id = {'pixel1_lat@143ms_top1@80.1_finetune@75', 'pixel1_lat@132ms_top1@79.8_finetune@75',
+    net_id = ['pixel1_lat@143ms_top1@80.1_finetune@75', 'pixel1_lat@132ms_top1@79.8_finetune@75',
               'pixel1_lat@79ms_top1@78.7_finetune@75', 'pixel1_lat@58ms_top1@76.9_finetune@75',
               'pixel1_lat@40ms_top1@74.9_finetune@25', 'pixel1_lat@28ms_top1@73.3_finetune@25',
               'pixel1_lat@20ms_top1@71.4_finetune@25', 'pixel2_lat@62ms_top1@75.8_finetune@25',
@@ -334,7 +334,7 @@ def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensem
               'tx2_gpu16@35ms_top1@70.3_finetune@25', 'cpu_lat@17ms_top1@75.7_finetune@25',
               'cpu_lat@15ms_top1@74.6_finetune@25', 'cpu_lat@11ms_top1@72.0_finetune@25',
               'cpu_lat@10ms_top1@71.1_finetune@25', 'flops@595M_top1@80.0_finetune@75',
-              'flops@482M_top1@79.6_finetune@75', 'flops@389M_top1@79.1_finetune@75', }
+              'flops@482M_top1@79.6_finetune@75', 'flops@389M_top1@79.1_finetune@75', ]
     n = len(net_id)
     best_acc = 0
     space = []
