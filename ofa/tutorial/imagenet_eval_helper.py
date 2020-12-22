@@ -60,7 +60,7 @@ def calib_bn(net, path, image_size, batch_size, num_images=2000):
     set_running_statistics(net, data_loader)
 
 
-def ensemble(nets, path, image_size, data_loader, batch_size=100, device='cuda:0'):
+def ensemble_validate(nets, path, image_size, data_loader, batch_size=100, device='cuda:0'):
     if 'cuda' in device:
         for net in nets:
             net = torch.nn.DataParallel(net).to(device)
@@ -304,7 +304,7 @@ def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0',
             net_id = select_netid(platform_name)
             net, image_size = ofa_specialized(net_id=net_id, pretrained=True)
             nets.append(net)
-        ensemble(nets, path, image_size, data_loader, batch_size, device)
+        ensemble_validate(nets, path, image_size, data_loader, batch_size, device)
 
 
     return net_id
