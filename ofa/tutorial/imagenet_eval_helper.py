@@ -60,6 +60,65 @@ def calib_bn(net, path, image_size, batch_size, num_images=2000):
     set_running_statistics(net, data_loader)
 
 
+def ensemble(nets, path, image_size, data_loader, batch_size=100, device='cuda:0'):
+    if 'cuda' in device:
+        for net in nets:
+            net = torch.nn.DataParallel(net).to(device)
+    else:
+        for net in nets:
+            net = net.to(device)
+
+    data_loader.dataset.transform = transforms.Compose([
+        transforms.Resize(int(math.ceil(image_size / 0.875))),
+        transforms.CenterCrop(image_size),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        ),
+    ])
+
+    cudnn.benchmark = True
+    criterion = nn.CrossEntropyLoss().to(device)
+
+    for net in nets:
+        net.eval()
+        net = net.to(device)
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
+
+    with torch.no_grad():
+        with tqdm(total=len(data_loader), desc='Validate') as t:
+            for i, (images, labels) in enumerate(data_loader):
+                images, labels = images.to(device), labels.to(device)
+                # compute output
+                n = len(nets)
+                output = 0
+                for net in nets:
+                    if output == 0:
+                        output =net(images)
+                    else:
+                        output+=net(images)
+                ouput = ouput/n
+                loss = criterion(output, labels)
+                # measure accuracy and record loss
+                acc1, acc5 = accuracy(output, labels, topk=(1, 5))
+
+                losses.update(loss.item(), images.size(0))
+                top1.update(acc1[0].item(), images.size(0))
+                top5.update(acc5[0].item(), images.size(0))
+                t.set_postfix({
+                    'loss': losses.avg,
+                    'top1': top1.avg,
+                    'top5': top5.avg,
+                    'img_size': images.size(2),
+                })
+                t.update(1)
+
+    print('Results: loss=%.5f,\t top1=%.1f,\t top5=%.1f' % (losses.avg, top1.avg, top5.avg))
+    return top1.avg
+
 
 def validate(net, path, image_size, data_loader, batch_size=100, device='cuda:0'):
     if 'cuda' in device:
@@ -112,7 +171,7 @@ def validate(net, path, image_size, data_loader, batch_size=100, device='cuda:0'
     return top1.avg
     
 
-def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0'):
+def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0', ensemble=False):
     def select_platform_name():
         valid_platform_name = [
             'pixel1', 'pixel2', 'note10', 'note8', 's7edge', 'lg-g8', '1080ti', 'v100', 'tx2', 'cpu', 'flops'
@@ -230,12 +289,21 @@ def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0')
                 continue
             return sub_efficiency_map[efficiency_constraint]
 
-    platform_name = select_platform_name()
-    net_id = select_netid(platform_name)
 
-    net, image_size = ofa_specialized(net_id=net_id, pretrained=True)
 
-    validate(net, path, image_size, data_loader, batch_size, device)
+    if not ensemble:
+        platform_name = select_platform_name()
+        net_id = select_netid(platform_name)
+        net, image_size = ofa_specialized(net_id=net_id, pretrained=True)
+        validate(net, path, image_size, data_loader, batch_size, device)
+    else:
+        nets = []
+        for i in range(2):
+            platform_name = select_platform_name()
+            net_id = select_netid(platform_name)
+            net, image_size = ofa_specialized(net_id=id, pretrained=True)
+            nets.append(net)
+        validate(nets, path, image_size, data_loader, batch_size, device)
 
     return net_id
 
