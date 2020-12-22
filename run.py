@@ -18,7 +18,7 @@ from ofa.utils import download_url
 # from ofa.tutorial.evolution_finder import EvolutionFinder
 # from ofa.tutorial.imagenet_eval_helper import evaluate_ofa_subnet, evaluate_ofa_specialized
 from ofa.tutorial import AccuracyPredictor, FLOPsTable, LatencyTable, EvolutionFinder
-from ofa.tutorial import evaluate_ofa_subnet, evaluate_ofa_specialized
+from ofa.tutorial import evaluate_ofa_subnet, evaluate_ofa_specialized, evaluate_ofa_space
 
 # set random seed
 random_seed = 1
@@ -84,7 +84,8 @@ else:
     data_loader = None
     print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')
 if cuda_available:
-    net_id = evaluate_ofa_specialized(imagenet_data_path, data_loader, ensemble=True)
-    print('Finished evaluating the pretrained sub-network: %s!' % net_id)
+    net_id = evaluate_ofa_space(imagenet_data_path, data_loader, ensemble=True)
+    # print('Finished evaluating the pretrained sub-network: %s!' % net_id)
+    print("best ensemble team{}".format(net_id))
 else:
     print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')

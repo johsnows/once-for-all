@@ -338,16 +338,21 @@ def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensem
     n = len(net_id)
     best_acc = 0
     space = []
+    best_team =[]
     for i in range(1, n):
         for j in range(i):
             nets = []
+            team = []
+            team.append(j)
+            team.append(i)
             net, image_size = ofa_specialized(net_id=net_id[j], pretrained=True)
             nets.append(net)
             nets.append(net_id[i])
             acc = ensemble_validate(nets, path, image_size, data_loader, batch_size, device)
             if acc>best_acc:
                 best_acc=acc
+                best_team = team
         print('space {} best_acc{}'.format(i+1, best_acc))
         space.append(best_acc)
     print('space:{}'.format(space))
-    return net_id
+    return net_id[best_team[0]], net_id[best_team[1]]
