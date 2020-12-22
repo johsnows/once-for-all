@@ -42,7 +42,7 @@ if cuda_available:
     print("Please input the path to the ImageNet dataset.\n")
     imagenet_data_path = "/youtu-public/imagenet/tfrecord/"
 
-    print(os.paht.isdir(imagenet_data_path))
+    print(os.path.isdir(imagenet_data_path))
     # if 'imagenet_data_path' is empty, download a subset of ImageNet containing 2000 images (~250M) for test
     if not os.path.isdir(imagenet_data_path):
         os.makedirs(imagenet_data_path, exist_ok=True)
