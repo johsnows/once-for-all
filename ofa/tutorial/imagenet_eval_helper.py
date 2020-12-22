@@ -95,8 +95,8 @@ def ensemble_validate(nets, path, image_size, data_loader, batch_size=100, devic
                 # compute output
                 n = len(nets)
                 output = 0
-                for net in nets:
-                    if output == 0:
+                for i, net in enumerate(nets):
+                    if i == 0:
                         output =net(images)
                     else:
                         output+=net(images)
