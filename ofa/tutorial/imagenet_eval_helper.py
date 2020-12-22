@@ -299,6 +299,7 @@ def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0',
     else:
         nets = []
         for i in range(2):
+            print('{}model'.format(i))
             platform_name = select_platform_name()
             net_id = select_netid(platform_name)
             net, image_size = ofa_specialized(net_id=id, pretrained=True)
