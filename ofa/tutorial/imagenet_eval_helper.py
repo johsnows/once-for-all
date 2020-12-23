@@ -11,6 +11,7 @@ from torchvision import transforms, datasets
 from ofa.utils import AverageMeter, accuracy
 from ofa.model_zoo import ofa_specialized
 from ofa.imagenet_classification.elastic_nn.utils import set_running_statistics
+import copy
 
 
 def evaluate_ofa_subnet(ofa_net, path, net_config, data_loader, batch_size, device='cuda:0'):
@@ -335,6 +336,18 @@ def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensem
               'cpu_lat@15ms_top1@74.6_finetune@25', 'cpu_lat@11ms_top1@72.0_finetune@25',
               'cpu_lat@10ms_top1@71.1_finetune@25', 'flops@595M_top1@80.0_finetune@75',
               'flops@482M_top1@79.6_finetune@75', 'flops@389M_top1@79.1_finetune@75', ]
+    net_acc=[]
+    for i, id in enumerate(net_id):
+        acc=""
+        for j in range(2, len(id)):
+            if id[j]=='.':
+                acc=id[j-2]+id[j-1]+id[j]+id[j+1]
+        net_acc.append(acc)
+    _, id =np.argsort(np.array(net_acc))
+    new_net_id = copy.deepcopy(net_id)
+    for i, sortid in enumerate(id):
+        new_net_id[i] = net_id[sortid]
+    print('new_net_id', new_net_id)
     n = len(net_id)
     best_acc = 0
     space = []
@@ -345,9 +358,9 @@ def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensem
             team = []
             team.append(j)
             team.append(i)
-            net, image_size = ofa_specialized(net_id=net_id[j], pretrained=True)
+            net, image_size = ofa_specialized(net_id=new_net_id[j], pretrained=True)
             nets.append(net)
-            net, image_size = ofa_specialized(net_id=net_id[i], pretrained=True)
+            net, image_size = ofa_specialized(net_id=new_net_id[i], pretrained=True)
             nets.append(net)
             acc = ensemble_validate(nets, path, image_size, data_loader, batch_size, device)
             if acc>best_acc:
