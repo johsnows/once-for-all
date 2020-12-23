@@ -343,7 +343,7 @@ def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensem
             if id[j]=='.':
                 acc=id[j-2]+id[j-1]+id[j]+id[j+1]
         net_acc.append(acc)
-    _, id =np.argsort(np.array(net_acc))
+    id =np.argsort(np.array(net_acc))
     new_net_id = copy.deepcopy(net_id)
     for i, sortid in enumerate(id):
         new_net_id[i] = net_id[sortid]
