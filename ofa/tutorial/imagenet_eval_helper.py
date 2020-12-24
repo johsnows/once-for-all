@@ -117,7 +117,7 @@ def ensemble_validate(nets, path, image_size, data_loader, batch_size=100, devic
                 })
                 t.update(1)
 
-    print('Results: loss=%.5f,\t top1=%.1f,\t top5=%.1f' % (losses.avg, top1.avg, top5.avg))
+    print('Results: loss=%.5f,\t top1=%.3f,\t top5=%.1f' % (losses.avg, top1.avg, top5.avg))
     return top1.avg
 
 
