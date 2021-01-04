@@ -12,6 +12,7 @@ from ofa.utils import AverageMeter, accuracy
 from ofa.model_zoo import ofa_specialized
 from ofa.imagenet_classification.elastic_nn.utils import set_running_statistics
 import copy
+import random
 
 
 def evaluate_ofa_subnet(ofa_net, path, net_config, data_loader, batch_size, device='cuda:0'):
@@ -311,31 +312,32 @@ def evaluate_ofa_specialized(path, data_loader, batch_size=100, device='cuda:0',
     return net_id
 
 
+net_id = ['pixel1_lat@143ms_top1@80.1_finetune@75', 'pixel1_lat@132ms_top1@79.8_finetune@75',
+          'pixel1_lat@79ms_top1@78.7_finetune@75', 'pixel1_lat@58ms_top1@76.9_finetune@75',
+          'pixel1_lat@40ms_top1@74.9_finetune@25', 'pixel1_lat@28ms_top1@73.3_finetune@25',
+          'pixel1_lat@20ms_top1@71.4_finetune@25', 'pixel2_lat@62ms_top1@75.8_finetune@25',
+          'pixel2_lat@50ms_top1@74.7_finetune@25', 'pixel2_lat@35ms_top1@73.4_finetune@25',
+          'pixel2_lat@25ms_top1@71.5_finetune@25', 'note10_lat@64ms_top1@80.2_finetune@75',
+          'note10_lat@50ms_top1@79.7_finetune@75', 'note10_lat@41ms_top1@79.3_finetune@75',
+          'note10_lat@16ms_top1@75.5_finetune@25', 'note10_lat@11ms_top1@73.6_finetune@25',
+          'note10_lat@8ms_top1@71.4_finetune@25', 'note8_lat@65ms_top1@76.1_finetune@25',
+          'note8_lat@49ms_top1@74.9_finetune@25', 'note8_lat@31ms_top1@72.8_finetune@25',
+          'note8_lat@22ms_top1@70.4_finetune@25', 's7edge_lat@88ms_top1@76.3_finetune@25',
+          's7edge_lat@58ms_top1@74.7_finetune@25', 's7edge_lat@41ms_top1@73.1_finetune@25',
+          's7edge_lat@29ms_top1@70.5_finetune@25', 'LG-G8_lat@24ms_top1@76.4_finetune@25',
+          'LG-G8_lat@16ms_top1@74.7_finetune@25', 'LG-G8_lat@11ms_top1@73.0_finetune@25',
+          'LG-G8_lat@8ms_top1@71.1_finetune@25', '1080ti_gpu64@27ms_top1@76.4_finetune@25',
+          '1080ti_gpu64@22ms_top1@75.3_finetune@25', '1080ti_gpu64@15ms_top1@73.8_finetune@25',
+          '1080ti_gpu64@12ms_top1@72.6_finetune@25', 'v100_gpu64@11ms_top1@76.1_finetune@25',
+          'v100_gpu64@9ms_top1@75.3_finetune@25', 'v100_gpu64@6ms_top1@73.0_finetune@25',
+          'v100_gpu64@5ms_top1@71.6_finetune@25', 'tx2_gpu16@96ms_top1@75.8_finetune@25',
+          'tx2_gpu16@80ms_top1@75.4_finetune@25', 'tx2_gpu16@47ms_top1@72.9_finetune@25',
+          'tx2_gpu16@35ms_top1@70.3_finetune@25', 'cpu_lat@17ms_top1@75.7_finetune@25',
+          'cpu_lat@15ms_top1@74.6_finetune@25', 'cpu_lat@11ms_top1@72.0_finetune@25',
+          'cpu_lat@10ms_top1@71.1_finetune@25', 'flops@595M_top1@80.0_finetune@75',
+          'flops@482M_top1@79.6_finetune@75', 'flops@389M_top1@79.1_finetune@75', ]
+
 def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensemble=False):
-    net_id = ['pixel1_lat@143ms_top1@80.1_finetune@75', 'pixel1_lat@132ms_top1@79.8_finetune@75',
-              'pixel1_lat@79ms_top1@78.7_finetune@75', 'pixel1_lat@58ms_top1@76.9_finetune@75',
-              'pixel1_lat@40ms_top1@74.9_finetune@25', 'pixel1_lat@28ms_top1@73.3_finetune@25',
-              'pixel1_lat@20ms_top1@71.4_finetune@25', 'pixel2_lat@62ms_top1@75.8_finetune@25',
-              'pixel2_lat@50ms_top1@74.7_finetune@25', 'pixel2_lat@35ms_top1@73.4_finetune@25',
-              'pixel2_lat@25ms_top1@71.5_finetune@25', 'note10_lat@64ms_top1@80.2_finetune@75',
-              'note10_lat@50ms_top1@79.7_finetune@75', 'note10_lat@41ms_top1@79.3_finetune@75',
-              'note10_lat@16ms_top1@75.5_finetune@25', 'note10_lat@11ms_top1@73.6_finetune@25',
-              'note10_lat@8ms_top1@71.4_finetune@25', 'note8_lat@65ms_top1@76.1_finetune@25',
-              'note8_lat@49ms_top1@74.9_finetune@25', 'note8_lat@31ms_top1@72.8_finetune@25',
-              'note8_lat@22ms_top1@70.4_finetune@25', 's7edge_lat@88ms_top1@76.3_finetune@25',
-              's7edge_lat@58ms_top1@74.7_finetune@25', 's7edge_lat@41ms_top1@73.1_finetune@25',
-              's7edge_lat@29ms_top1@70.5_finetune@25', 'LG-G8_lat@24ms_top1@76.4_finetune@25',
-              'LG-G8_lat@16ms_top1@74.7_finetune@25', 'LG-G8_lat@11ms_top1@73.0_finetune@25',
-              'LG-G8_lat@8ms_top1@71.1_finetune@25', '1080ti_gpu64@27ms_top1@76.4_finetune@25',
-              '1080ti_gpu64@22ms_top1@75.3_finetune@25', '1080ti_gpu64@15ms_top1@73.8_finetune@25',
-              '1080ti_gpu64@12ms_top1@72.6_finetune@25', 'v100_gpu64@11ms_top1@76.1_finetune@25',
-              'v100_gpu64@9ms_top1@75.3_finetune@25', 'v100_gpu64@6ms_top1@73.0_finetune@25',
-              'v100_gpu64@5ms_top1@71.6_finetune@25', 'tx2_gpu16@96ms_top1@75.8_finetune@25',
-              'tx2_gpu16@80ms_top1@75.4_finetune@25', 'tx2_gpu16@47ms_top1@72.9_finetune@25',
-              'tx2_gpu16@35ms_top1@70.3_finetune@25', 'cpu_lat@17ms_top1@75.7_finetune@25',
-              'cpu_lat@15ms_top1@74.6_finetune@25', 'cpu_lat@11ms_top1@72.0_finetune@25',
-              'cpu_lat@10ms_top1@71.1_finetune@25', 'flops@595M_top1@80.0_finetune@75',
-              'flops@482M_top1@79.6_finetune@75', 'flops@389M_top1@79.1_finetune@75', ]
     net_acc=[]
     for i, id in enumerate(net_id):
         acc=""
@@ -373,30 +375,6 @@ def evaluate_ofa_space(path, data_loader, batch_size=100, device='cuda:0', ensem
 
 
 def evaluate_ofa_best_acc_team(path, data_loader, batch_size=100, device='cuda:0', ensemble=False):
-    net_id = ['pixel1_lat@143ms_top1@80.1_finetune@75', 'pixel1_lat@132ms_top1@79.8_finetune@75',
-              'pixel1_lat@79ms_top1@78.7_finetune@75', 'pixel1_lat@58ms_top1@76.9_finetune@75',
-              'pixel1_lat@40ms_top1@74.9_finetune@25', 'pixel1_lat@28ms_top1@73.3_finetune@25',
-              'pixel1_lat@20ms_top1@71.4_finetune@25', 'pixel2_lat@62ms_top1@75.8_finetune@25',
-              'pixel2_lat@50ms_top1@74.7_finetune@25', 'pixel2_lat@35ms_top1@73.4_finetune@25',
-              'pixel2_lat@25ms_top1@71.5_finetune@25', 'note10_lat@64ms_top1@80.2_finetune@75',
-              'note10_lat@50ms_top1@79.7_finetune@75', 'note10_lat@41ms_top1@79.3_finetune@75',
-              'note10_lat@16ms_top1@75.5_finetune@25', 'note10_lat@11ms_top1@73.6_finetune@25',
-              'note10_lat@8ms_top1@71.4_finetune@25', 'note8_lat@65ms_top1@76.1_finetune@25',
-              'note8_lat@49ms_top1@74.9_finetune@25', 'note8_lat@31ms_top1@72.8_finetune@25',
-              'note8_lat@22ms_top1@70.4_finetune@25', 's7edge_lat@88ms_top1@76.3_finetune@25',
-              's7edge_lat@58ms_top1@74.7_finetune@25', 's7edge_lat@41ms_top1@73.1_finetune@25',
-              's7edge_lat@29ms_top1@70.5_finetune@25', 'LG-G8_lat@24ms_top1@76.4_finetune@25',
-              'LG-G8_lat@16ms_top1@74.7_finetune@25', 'LG-G8_lat@11ms_top1@73.0_finetune@25',
-              'LG-G8_lat@8ms_top1@71.1_finetune@25', '1080ti_gpu64@27ms_top1@76.4_finetune@25',
-              '1080ti_gpu64@22ms_top1@75.3_finetune@25', '1080ti_gpu64@15ms_top1@73.8_finetune@25',
-              '1080ti_gpu64@12ms_top1@72.6_finetune@25', 'v100_gpu64@11ms_top1@76.1_finetune@25',
-              'v100_gpu64@9ms_top1@75.3_finetune@25', 'v100_gpu64@6ms_top1@73.0_finetune@25',
-              'v100_gpu64@5ms_top1@71.6_finetune@25', 'tx2_gpu16@96ms_top1@75.8_finetune@25',
-              'tx2_gpu16@80ms_top1@75.4_finetune@25', 'tx2_gpu16@47ms_top1@72.9_finetune@25',
-              'tx2_gpu16@35ms_top1@70.3_finetune@25', 'cpu_lat@17ms_top1@75.7_finetune@25',
-              'cpu_lat@15ms_top1@74.6_finetune@25', 'cpu_lat@11ms_top1@72.0_finetune@25',
-              'cpu_lat@10ms_top1@71.1_finetune@25', 'flops@595M_top1@80.0_finetune@75',
-              'flops@482M_top1@79.6_finetune@75', 'flops@389M_top1@79.1_finetune@75', ]
     net_acc=[]
     for i, id in enumerate(net_id):
         acc=""
@@ -433,7 +411,54 @@ def evaluate_ofa_best_acc_team(path, data_loader, batch_size=100, device='cuda:0
     space.append(best_acc)
     print('space:{}'.format(space))
     return new_net_id[best_team[0]], new_net_id[best_team[1]]
-net_id=['tx2_gpu16@35ms_top1@70.3_finetune@25', 'note8_lat@22ms_top1@70.4_finetune@25', 's7edge_lat@29ms_top1@70.5_finetune@25',
+
+
+def evaluate_ofa_random_sample(path, data_loader, batch_size=100, device='cuda:0', ensemble=False):
+    net_acc=[]
+    for i, id in enumerate(net_id):
+        acc=""
+        for j in range(2, len(id)):
+            if id[j]=='.':
+                acc=id[j-2]+id[j-1]+id[j]+id[j+1]
+        net_acc.append(acc)
+    id =np.argsort(np.array(net_acc))
+    new_net_id = copy.deepcopy(net_id)
+    for i, sortid in enumerate(id):
+        new_net_id[i] = net_id[sortid]
+    print('new_net_id', new_net_id)
+    n = len(net_id)
+    best_acc = 0
+    acc_list = []
+    space = []
+    best_team =[]
+    for k in range(20):
+        nets = []
+        team = []
+        i = random.randint(n)
+        j = (i + random.randint(1, n-1)) % n
+        print('i:{} j:{}'.format(i, j))
+        team.append(j)
+        team.append(i)
+        net, image_size = ofa_specialized(net_id=new_net_id[j], pretrained=True)
+        nets.append(net)
+        net, image_size = ofa_specialized(net_id=new_net_id[i], pretrained=True)
+        nets.append(net)
+        acc = ensemble_validate(nets, path, image_size, data_loader, batch_size, device)
+        print('net i:{} netj:{} acc:{}'.format(new_net_id[i], new_net_id[j], acc))
+        acc_list.append(acc)
+        if acc>best_acc:
+            best_acc=acc
+            best_team = team
+    avg_acc = np.mean(acc_list)
+    std_acc = np.std(acc_list, ddof=1)
+    var_acc = np.var(acc_list)
+    print("avg{} var{} std{}".format(avg_acc, std_acc, var_acc))
+    print('best_random_team best_acc{}'.format(best_team, best_acc))
+    space.append(best_acc)
+    print('space:{}'.format(space))
+    return new_net_id[best_team[0]], new_net_id[best_team[1]]
+
+sort_net_id=['tx2_gpu16@35ms_top1@70.3_finetune@25', 'note8_lat@22ms_top1@70.4_finetune@25', 's7edge_lat@29ms_top1@70.5_finetune@25',
         'cpu_lat@10ms_top1@71.1_finetune@25', 'LG-G8_lat@8ms_top1@71.1_finetune@25', 'pixel1_lat@20ms_top1@71.4_finetune@25',
         'note10_lat@8ms_top1@71.4_finetune@25', 'pixel2_lat@25ms_top1@71.5_finetune@25', 'v100_gpu64@5ms_top1@71.6_finetune@25',
         'cpu_lat@11ms_top1@72.     0_finetune@25', '1080ti_gpu64@12ms_top1@72.6_finetune@25', 'note8_lat@31ms_top1@72.8_finetune@25',
