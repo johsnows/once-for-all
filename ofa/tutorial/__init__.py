@@ -2,4 +2,4 @@ from .accuracy_predictor import AccuracyPredictor
 from .flops_table import FLOPsTable
 from .latency_table import LatencyTable
 from .evolution_finder import EvolutionFinder
-from .imagenet_eval_helper import evaluate_ofa_subnet, evaluate_ofa_specialized, evaluate_ofa_space, evaluate_ofa_best_acc_team
+from .imagenet_eval_helper import evaluate_ofa_subnet, evaluate_ofa_specialized, evaluate_ofa_space, evaluate_ofa_best_acc_team, evaluate_ofa_random_sample
