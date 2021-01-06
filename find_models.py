@@ -106,7 +106,7 @@ for i in range(100):
     # subnet = ofa_network.get_active_subnet(preserve_weight=True)
     # net_config = ofa_network.get_active_net_config()
     arch_manager = ArchManager()
-    net_config = arch_manager.random_resample()
+    net_config = arch_manager.random_sample()
     print(net_config)
     top1 = evaluate_ofa_subnet(
         ofa_network,
