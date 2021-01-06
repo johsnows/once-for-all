@@ -119,6 +119,7 @@ for i in range(100):
     if top1>=77 and top1<=79:
         nets.append(net_config)
 
+print('all config', nets)
 fh = open(('ofa_nets.json'), 'w')
 json.dump(nets, fh)
 fh.close()
