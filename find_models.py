@@ -20,6 +20,7 @@ from ofa.utils import download_url
 # from ofa.tutorial.imagenet_eval_helper import evaluate_ofa_subnet, evaluate_ofa_specialized
 from ofa.tutorial import AccuracyPredictor, FLOPsTable, LatencyTable, EvolutionFinder
 from ofa.tutorial import evaluate_ofa_subnet, evaluate_ofa_specialized, evaluate_ofa_space, evaluate_ofa_best_acc_team, evaluate_ofa_random_sample
+from ofa.tutorial.evolution_finder import ArchManager
 
 # set random seed
 random_seed = 1
@@ -102,8 +103,10 @@ print(accuracy_predictor.model)
 nets = []
 for i in range(100):
     ofa_network.sample_active_subnet()
-    subnet = ofa_network.get_active_subnet(preserve_weight=True)
-    net_config = ofa_network.get_active_net_config()
+    # subnet = ofa_network.get_active_subnet(preserve_weight=True)
+    # net_config = ofa_network.get_active_net_config()
+    arch_manager = ArchManager()
+    net_config = arch_manager.random_resample()
     print(net_config)
     top1 = evaluate_ofa_subnet(
         ofa_network,
