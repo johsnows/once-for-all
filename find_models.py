@@ -8,6 +8,7 @@ import random
 import math
 import copy
 from matplotlib import pyplot as plt
+import  json
 
 from ofa.model_zoo import ofa_net
 from ofa.utils import download_url
@@ -114,7 +115,7 @@ for i in range(100):
     if top1>=77 and top1<=79:
         nets.append(net_config)
 
-fh = open(os.path.join(args.output_path, 'ofa_nets.json'), 'w')
+fh = open(('ofa_nets.json'), 'w')
 json.dump(nets, fh)
 fh.close()
 
