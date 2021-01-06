@@ -434,7 +434,7 @@ def evaluate_ofa_random_sample(path, data_loader, batch_size=100, device='cuda:0
     for k in range(20):
         nets = []
         team = []
-        i = random.randint(n)
+        i = random.randint(0, n-1)
         j = (i + random.randint(1, n-1)) % n
         print('i:{} j:{}'.format(i, j))
         team.append(j)
