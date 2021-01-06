@@ -84,12 +84,12 @@ if cuda_available:
 else:
     data_loader = None
     print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')
-if cuda_available:
-    net_id = evaluate_ofa_random_sample(imagenet_data_path, data_loader, ensemble=True)
-    # print('Finished evaluating the pretrained sub-network: %s!' % net_id)
-    print("best ensemble team{}".format(net_id))
-else:
-    print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')
+# if cuda_available:
+#     net_id = evaluate_ofa_random_sample(imagenet_data_path, data_loader, ensemble=True)
+#     # print('Finished evaluating the pretrained sub-network: %s!' % net_id)
+#     print("best ensemble team{}".format(net_id))
+# else:
+#     print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')
 
 accuracy_predictor = AccuracyPredictor(
     pretrained=True,
