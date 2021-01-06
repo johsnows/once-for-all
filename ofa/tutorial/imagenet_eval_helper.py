@@ -26,6 +26,7 @@ def evaluate_ofa_subnet(ofa_net, path, net_config, data_loader, batch_size, devi
 
 
 def evaluate_ofa_ensemble_subnet(ofa_net, path, net_config1, net_config2, data_loader, batch_size, device='cuda:0'):
+    print('')
     assert 'ks' in net_config1 and 'd' in net_config1 and 'e' in net_config1
     assert len(net_config1['ks']) == 20 and len(net_config1['e']) == 20 and len(net_config1['d']) == 5
     ofa_net.set_active_subnet(ks=net_config1['ks'], d=net_config1['d'], e=net_config1['e'])
