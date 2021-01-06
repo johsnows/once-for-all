@@ -25,6 +25,25 @@ def evaluate_ofa_subnet(ofa_net, path, net_config, data_loader, batch_size, devi
     return top1
 
 
+def evaluate_ofa_subnet(ofa_net, path, net_config1, net_config2, data_loader, batch_size, device='cuda:0'):
+    assert 'ks' in net_config1 and 'd' in net_config1 and 'e' in net_config1
+    assert len(net_config1['ks']) == 20 and len(net_config1['e']) == 20 and len(net_config1['d']) == 5
+    ofa_net.set_active_subnet(ks=net_config1['ks'], d=net_config1['d'], e=net_config1['e'])
+    subnet1 = ofa_net.get_active_subnet().to(device)
+    calib_bn(subnet1, path, net_config1['r'][0], batch_size)
+
+
+    ofa_net.set_active_subnet(ks=net_config2['ks'], d=net_config2['d'], e=net_config2['e'])
+    subnet2 = ofa_net.get_active_subnet().to(device)
+    calib_bn(subnet2, path, net_config2['r'][0], batch_size)
+    assert net_config2['r'][0]==net_config1['r'][0]
+    subnets = []
+    subnets.append(subnet2)
+    subnets.append(subnet1)
+    top1 = ensemble_validate(subnets, path, net_config2['r'][0], data_loader, batch_size, device)
+    return top1
+
+
 def calib_bn(net, path, image_size, batch_size, num_images=2000):
     # print('Creating dataloader for resetting BN running statistics...')
     dataset = datasets.ImageFolder(
