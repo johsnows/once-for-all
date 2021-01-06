@@ -104,6 +104,7 @@ for i in range(100):
     ofa_network.sample_active_subnet()
     subnet = ofa_network.get_active_subnet(preserve_weight=True)
     net_config = subnet.config
+    print(net_config)
     top1 = evaluate_ofa_subnet(
         ofa_network,
         imagenet_data_path,
