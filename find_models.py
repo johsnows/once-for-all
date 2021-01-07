@@ -154,7 +154,8 @@ for i in range(1, len_nets):
         top1 = evaluate_ofa_ensemble_subnet(
             ofa_network,
             imagenet_data_path,
-            team,
+            nets[i],
+            nets[j],
             data_loader,
             batch_size=250,
             device='cuda:0' if cuda_available else 'cpu')
