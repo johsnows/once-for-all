@@ -142,6 +142,7 @@ for net in nets:
         device='cuda:0' if cuda_available else 'cpu'
     )
     accs.append(top1)
+print('accs', accs)
 best_acc = 0
 best_team = []
 best_team_acc = []
