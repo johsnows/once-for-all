@@ -92,13 +92,13 @@ else:
 # else:
 #     print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')
 
-accuracy_predictor = AccuracyPredictor(
-    pretrained=True,
-    device='cuda:0' if cuda_available else 'cpu'
-)
-
-print('The accuracy predictor is ready!')
-print(accuracy_predictor.model)
+# accuracy_predictor = AccuracyPredictor(
+#     pretrained=True,
+#     device='cuda:0' if cuda_available else 'cpu'
+# )
+#
+# print('The accuracy predictor is ready!')
+# print(accuracy_predictor.model)
 
 # nets = []
 # for i in range(100):
