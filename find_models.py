@@ -146,6 +146,8 @@ best_acc = 0
 best_team = []
 best_team_acc = []
 space_acc = []
+end = time.time()
+print('nets_number', len_nets)
 for i in range(1, len_nets):
     for j in range(i):
         team = []
@@ -160,9 +162,11 @@ for i in range(1, len_nets):
             batch_size=250,
             device='cuda:0' if cuda_available else 'cpu')
         team_acc = []
-        team_acc.appends(accs[i])
-        team_acc.appends(accs[j])
+        team_acc.append(accs[i])
+        team_acc.append(accs[j])
         print('net i with acc{} net j with acc{} get ensemble acc{}'.format(accs[i], accs[j], top1))
+        print('time:{}'.format(time.time()-end))
+        end = time.time()
         if top1 > best_acc:
             best_acc = top1
             best_team = team
