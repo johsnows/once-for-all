@@ -132,14 +132,15 @@ for net in nets:
 nets = copy.deepcopy(new_nets)
 len_nets = len(nets)
 accs = []
-for net in range(len_nets):
+for net in nets:
     top1 = evaluate_ofa_subnet(
         ofa_network,
         imagenet_data_path,
         net,
         data_loader,
         batch_size=250,
-        device='cuda:0' if cuda_available else 'cpu')
+        device='cuda:0' if cuda_available else 'cpu'
+    )
     accs.append(top1)
 best_acc = 0
 best_team = []
