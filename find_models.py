@@ -19,7 +19,7 @@ from ofa.utils import download_url
 # from ofa.tutorial.evolution_finder import EvolutionFinder
 # from ofa.tutorial.imagenet_eval_helper import evaluate_ofa_subnet, evaluate_ofa_specialized
 from ofa.tutorial import AccuracyPredictor, FLOPsTable, LatencyTable, EvolutionFinder
-from ofa.tutorial import evaluate_ofa_subnet, evaluate_ofa_specialized, evaluate_ofa_space, evaluate_ofa_best_acc_team, evaluate_ofa_random_sample
+from ofa.tutorial import evaluate_ofa_ensemble_subnet, evaluate_ofa_subnet, evaluate_ofa_specialized, evaluate_ofa_space, evaluate_ofa_best_acc_team, evaluate_ofa_random_sample
 from ofa.tutorial.evolution_finder import ArchManager
 
 # set random seed
@@ -100,65 +100,74 @@ accuracy_predictor = AccuracyPredictor(
 print('The accuracy predictor is ready!')
 print(accuracy_predictor.model)
 
-nets = []
-for i in range(100):
-    ofa_network.sample_active_subnet()
-    # subnet = ofa_network.get_active_subnet(preserve_weight=True)
-    # net_config = ofa_network.get_active_net_config()
-    arch_manager = ArchManager()
-    net_config = arch_manager.random_sample()
-    print(net_config)
+# nets = []
+# for i in range(100):
+#     ofa_network.sample_active_subnet()
+#     # subnet = ofa_network.get_active_subnet(preserve_weight=True)
+#     # net_config = ofa_network.get_active_net_config()
+#     arch_manager = ArchManager()
+#     net_config = arch_manager.random_sample()
+#     print(net_config)
+#     top1 = evaluate_ofa_subnet(
+#         ofa_network,
+#         imagenet_data_path,
+#         net_config,
+#         data_loader,
+#         batch_size=250,
+#         device='cuda:0' if cuda_available else 'cpu')
+#     print("net_config:{} top1:{}".format(net_config, top1))
+#     if top1>=77 and top1<=79:
+#         nets.append(net_config)
+#
+# print('all config', nets)
+# fh = open(('ofa_nets.json'), 'w')
+# json.dump(nets, fh)
+# fh.close()
+with open("ofa_nets.json", "r") as load_josn:
+    nets = json.load(load_josn)
+new_nets = []
+for net in nets:
+    if(net['r'][0] == 224):
+        new_nets.append(net)
+nets = copy.deepcopy(new_nets)
+len_nets = len(nets)
+accs = []
+for net in range(len_nets):
     top1 = evaluate_ofa_subnet(
         ofa_network,
         imagenet_data_path,
-        net_config,
+        net,
         data_loader,
         batch_size=250,
         device='cuda:0' if cuda_available else 'cpu')
-    print("net_config:{} top1:{}".format(net_config, top1))
-    if top1>=77 and top1<=79:
-        nets.append(net_config)
+    accs.append(top1)
+best_acc = 0
+best_team = []
+best_team_acc = []
+space_acc = []
+for i in range(1, len_nets):
+    for j in range(i):
+        team = []
+        team.append(nets[i])
+        team.append(nets[j])
+        top1 = evaluate_ofa_ensemble_subnet(
+            ofa_network,
+            imagenet_data_path,
+            team,
+            data_loader,
+            batch_size=250,
+            device='cuda:0' if cuda_available else 'cpu')
+        team_acc = []
+        team_acc.appends(accs[i])
+        team_acc.appends(accs[j])
+        print('net i with acc{} net j with acc{} get ensemble acc{}'.format(accs[i], accs[j], top1))
+        if top1 > best_acc:
+            best_acc = top1
+            best_team = team
+            best_team_acc = team_acc
+    space_acc.append(best_acc)
+    print("space {} acc{}".format(i, best_acc))
+print(space_acc)
+print("best_acc {}, best_team_acc{}, best_team{}".format(best_acc, best_team_acc, best_team))
 
-print('all config', nets)
-fh = open(('ofa_nets.json'), 'w')
-json.dump(nets, fh)
-fh.close()
 
-# target_hardware = 'v100'
-# latency_table = LatencyTable(device=target_hardware)
-# print('The Latency lookup table on %s is ready!' % target_hardware)
-#
-# latency_constraint = 25  # ms, suggested range [15, 33] ms
-# P = 100  # The size of population in each generation
-# N = 500  # How many generations of population to be searched
-# r = 0.25  # The ratio of networks that are used as parents for next generation
-# params = {
-#     'constraint_type': target_hardware, # Let's do FLOPs-constrained search
-#     'efficiency_constraint': latency_constraint,
-#     'mutate_prob': 0.1, # The probability of mutation in evolutionary search
-#     'mutation_ratio': 0.5, # The ratio of networks that are generated through mutation in generation n >= 2.
-#     'efficiency_predictor': latency_table, # To use a predefined efficiency predictor.
-#     'accuracy_predictor': accuracy_predictor, # To use a predefined accuracy_predictor predictor.
-#     'population_size': P,
-#     'max_time_budget': N,
-#     'parent_ratio': r,
-# }
-#
-# # build the evolution finder
-# finder = EvolutionFinder(**params)
-#
-# # start searching
-# result_lis = []
-# st = time.time()
-# best_valids, best_info = finder.run_evolution_search()
-# result_lis.append(best_info)
-# ed = time.time()
-# print('Found best architecture on %s with latency <= %.2f ms in %.2f seconds! '
-#       'It achieves %.2f%s predicted accuracy with %.2f ms latency on %s.' %
-#       (target_hardware, latency_constraint, ed-st, best_info[0] * 100, '%', best_info[-1], target_hardware))
-#
-# # visualize the architecture of the searched sub-net
-# _, net_config, latency = best_info
-# ofa_network.set_active_subnet(ks=net_config['ks'], d=net_config['d'], e=net_config['e'])
-# print('Architecture of the searched sub-net:')
-# print(ofa_network.module_str)
