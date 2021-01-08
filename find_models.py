@@ -224,7 +224,7 @@ def random_ensemble(nets):
     space.append(best_acc)
     print('space:{}'.format(space))
 
-
+grow_with_space(nets, accs)
 random_ensemble(nets)
 
 
