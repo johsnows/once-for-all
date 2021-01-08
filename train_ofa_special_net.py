@@ -123,10 +123,10 @@ if __name__ == '__main__':
     # Pin GPU to be used to process local rank (one GPU per process)
     torch.cuda.set_device(hvd.local_rank())
 
-    args.teacher_path = download_url(
-        'https://hanlab.mit.edu/files/OnceForAll/ofa_checkpoints/ofa_D4_E6_K7',
-        model_dir='.torch/ofa_checkpoints/%d' % hvd.rank()
-    )
+    # args.teacher_path = download_url(
+    #     'https://hanlab.mit.edu/files/OnceForAll/ofa_checkpoints/ofa_D4_E6_K7',
+    #     model_dir='.torch/ofa_checkpoints/%d' % hvd.rank()
+    # )
 
     num_gpus = hvd.size()
 
@@ -195,9 +195,6 @@ if __name__ == '__main__':
     # hvd broadcast
     distributed_run_manager.broadcast()
 
-    # load teacher net weights
-    if args.kd_ratio > 0:
-        load_models(distributed_run_manager, args.teacher_model, model_path=args.teacher_path)
 
     # training
     from ofa.imagenet_classification.elastic_nn.training.progressive_shrinking import validate, train

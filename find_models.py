@@ -37,7 +37,8 @@ if cuda_available:
     print('Using GPU.')
 else:
     print('Using CPU.')
-ofa_network = ofa_net('ofa_mbv3_d234_e346_k357_w1.2', pretrained=True)
+# ofa_network = ofa_net('ofa_mbv3_d234_e346_k357_w1.2', pretrained=True)
+ofa_network = ofa_net('ofa_resnet50_d=0+1+2_e=0.2+0.25+0.35_w=0.65+0.8+1.0', pretrained=True)
 print('The OFA Network is ready.')
 if cuda_available:
     # path to the ImageNet dataset
@@ -122,12 +123,12 @@ for i in range(300):
         nets.append(net_config)
 
 print('all config', nets)
-fh = open(('ofa_nets300.json'), 'w')
+fh = open(('ofa_nets_resnet_300.json'), 'w')
 json.dump(nets, fh)
 fh.close()
-np.save("ofa_nets300_acc.npy", ofa_network)
+np.save("ofa_nets_resnet_300_acc.npy", ofa_network)
 
-with open("ofa_nets300.json", "r") as load_josn:
+with open("ofa_nets_resnet_300.json", "r") as load_josn:
     nets = json.load(load_josn)
 new_nets = []
 for net in nets:
@@ -135,7 +136,8 @@ for net in nets:
         new_nets.append(net)
 nets = copy.deepcopy(new_nets)
 len_nets = len(nets)
-accs = np.load("ofa_nets300_acc.npy")
+accs = np.load("ofa_nets_resnet_300_acc.npy")
+print('accs', accs)
 # for net in nets:
 #     top1 = evaluate_ofa_subnet(
 #         ofa_network,
@@ -146,18 +148,57 @@ accs = np.load("ofa_nets300_acc.npy")
 #         device='cuda:0' if cuda_available else 'cpu'
 #     )
 #     accs.append(top1)
-print('accs', accs)
-best_acc = 0
-best_team = []
-best_team_acc = []
-space_acc = []
-end = time.time()
-print('nets_number', len_nets)
-for i in range(1, len_nets):
-    for j in range(i):
+
+def grow_with_space(nets, accs):
+    best_acc = 0
+    best_team = []
+    best_team_acc = []
+    space_acc = []
+    end = time.time()
+    print('nets_number', len_nets)
+    for i in range(1, len_nets):
+        for j in range(i):
+            team = []
+            team.append(nets[i])
+            team.append(nets[j])
+            top1 = evaluate_ofa_ensemble_subnet(
+                ofa_network,
+                imagenet_data_path,
+                nets[i],
+                nets[j],
+                data_loader,
+                batch_size=250,
+                device='cuda:0' if cuda_available else 'cpu')
+            team_acc = []
+            team_acc.append(accs[i])
+            team_acc.append(accs[j])
+            print('net i with acc{} net j with acc{} get ensemble acc{}'.format(accs[i], accs[j], top1))
+            print('time:{}'.format(time.time()-end))
+            end = time.time()
+            if top1 > best_acc:
+                best_acc = top1
+                best_team = team
+                best_team_acc = team_acc
+        space_acc.append(best_acc)
+        print("space {} acc{}".format(i, best_acc))
+    print(space_acc)
+    print("best_acc {}, best_team_acc{}, best_team{}".format(best_acc, best_team_acc, best_team))
+
+def random_ensemble(nets):
+    n = len(nets)
+    best_team = []
+    best_team_acc = []
+    best_acc = 0
+    acc_list = []
+    space = []
+    for k in range(20):
+        nets = []
         team = []
-        team.append(nets[i])
-        team.append(nets[j])
+        i = random.randint(0, n-1)
+        j = (i + random.randint(1, n-1)) % n
+        print('i:{} j:{}'.format(i, j))
+        team.append(j)
+        team.append(i)
         top1 = evaluate_ofa_ensemble_subnet(
             ofa_network,
             imagenet_data_path,
@@ -170,15 +211,20 @@ for i in range(1, len_nets):
         team_acc.append(accs[i])
         team_acc.append(accs[j])
         print('net i with acc{} net j with acc{} get ensemble acc{}'.format(accs[i], accs[j], top1))
-        print('time:{}'.format(time.time()-end))
-        end = time.time()
+        acc_list.append(top1)
         if top1 > best_acc:
-            best_acc = top1
             best_team = team
             best_team_acc = team_acc
-    space_acc.append(best_acc)
-    print("space {} acc{}".format(i, best_acc))
-print(space_acc)
-print("best_acc {}, best_team_acc{}, best_team{}".format(best_acc, best_team_acc, best_team))
+            best_acc = top1
+    avg_acc = np.mean(acc_list)
+    std_acc = np.std(acc_list, ddof=1)
+    var_acc = np.var(acc_list)
+    print("avg{} var{} std{}".format(avg_acc, std_acc, var_acc))
+    print('best_random_team best_acc{}'.format(best_team, best_acc))
+    space.append(best_acc)
+    print('space:{}'.format(space))
+
+
+random_ensemble(nets)
 
 
