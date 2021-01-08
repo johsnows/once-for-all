@@ -127,7 +127,7 @@ json.dump(nets, fh)
 fh.close()
 np.save("ofa_nets300_acc.npy", ofa_network)
 
-with open("ofa_nets.json", "r") as load_josn:
+with open("ofa_nets300.json", "r") as load_josn:
     nets = json.load(load_josn)
 new_nets = []
 for net in nets:
