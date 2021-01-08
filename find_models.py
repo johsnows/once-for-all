@@ -19,7 +19,7 @@ from ofa.utils import download_url
 # from ofa.tutorial.evolution_finder import EvolutionFinder
 # from ofa.tutorial.imagenet_eval_helper import evaluate_ofa_subnet, evaluate_ofa_specialized
 from ofa.tutorial import AccuracyPredictor, FLOPsTable, LatencyTable, EvolutionFinder
-from ofa.tutorial import evaluate_ofa_ensemble_subnet, evaluate_ofa_subnet, evaluate_ofa_specialized, evaluate_ofa_space, evaluate_ofa_best_acc_team, evaluate_ofa_random_sample
+from ofa.tutorial import evaluate_ofa_resnet_ensemble_subnet, evaluate_ofa_resnet_subnet, evaluate_ofa_ensemble_subnet, evaluate_ofa_subnet, evaluate_ofa_specialized, evaluate_ofa_space, evaluate_ofa_best_acc_team, evaluate_ofa_random_sample
 from ofa.tutorial.evolution_finder import ArchManager
 
 # set random seed
@@ -112,7 +112,7 @@ for i in range(300):
     # net_config = arch_manager.random_sample()
     net_config = ofa_network.sample_active_subnet()
     print(net_config)
-    top1 = evaluate_ofa_subnet(
+    top1 = evaluate_ofa_resnet_subnet(
         ofa_network,
         imagenet_data_path,
         net_config,
@@ -133,9 +133,9 @@ np.save("ofa_nets_resnet_300_acc.npy", ofa_network)
 with open("ofa_nets_resnet_300.json", "r") as load_josn:
     nets = json.load(load_josn)
 new_nets = []
-for net in nets:
-    if(net['r'][0] == 224):
-        new_nets.append(net)
+# for net in nets:
+#     if(net['r'][0] == 224):
+#         new_nets.append(net)
 nets = copy.deepcopy(new_nets)
 len_nets = len(nets)
 accs = np.load("ofa_nets_resnet_300_acc.npy")
@@ -163,7 +163,7 @@ def grow_with_space(nets, accs):
             team = []
             team.append(nets[i])
             team.append(nets[j])
-            top1 = evaluate_ofa_ensemble_subnet(
+            top1 = evaluate_ofa_resnet_ensemble_subnet(
                 ofa_network,
                 imagenet_data_path,
                 nets[i],
@@ -201,7 +201,7 @@ def random_ensemble(nets):
         print('i:{} j:{}'.format(i, j))
         team.append(j)
         team.append(i)
-        top1 = evaluate_ofa_ensemble_subnet(
+        top1 = evaluate_ofa_resnet_ensemble_subnet(
             ofa_network,
             imagenet_data_path,
             nets[i],

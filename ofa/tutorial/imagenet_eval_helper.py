@@ -14,6 +14,34 @@ from ofa.imagenet_classification.elastic_nn.utils import set_running_statistics
 import copy
 import random
 
+def evaluate_ofa_resnet_subnet(ofa_net, path, net_config, data_loader, batch_size, device='cuda:0'):
+    assert 'w' in net_config and 'd' in net_config and 'e' in net_config
+    assert len(net_config['w']) == 6 and len(net_config['e']) == 18 and len(net_config['d']) == 5
+    ofa_net.set_active_subnet(w=net_config['w'], d=net_config['d'], e=net_config['e'])
+    subnet = ofa_net.get_active_subnet().to(device)
+    calib_bn(subnet, path, 224, batch_size)
+    top1 = validate(subnet, path, 224, data_loader, batch_size, device)
+    return top1
+
+
+def evaluate_ofa_resnet_ensemble_subnet(ofa_net, path, net_config1, net_config2, data_loader, batch_size, device='cuda:0'):
+    assert 'w' in net_config1 and 'd' in net_config1 and 'e' in net_config1
+    assert len(net_config1['w']) == 6 and len(net_config1['e']) == 18 and len(net_config1['d']) == 5
+    ofa_net.set_active_subnet(w=net_config1['w'], d=net_config1['d'], e=net_config1['e'])
+    subnet1 = ofa_net.get_active_subnet().to(device)
+    calib_bn(subnet1, path, 224, batch_size)
+
+
+
+    ofa_net.set_active_subnet(w=net_config2['w'], d=net_config2['d'], e=net_config2['e'])
+    subnet2 = ofa_net.get_active_subnet().to(device)
+    calib_bn(subnet2, path, 224, batch_size)
+    # assert net_config2['r'][0]==net_config1['r'][0]
+    subnets = []
+    subnets.append(subnet2)
+    subnets.append(subnet1)
+    top1 = ensemble_validate(subnets, path, 224, data_loader, batch_size, device)
+    return top1
 
 def evaluate_ofa_subnet(ofa_net, path, net_config, data_loader, batch_size, device='cuda:0'):
     assert 'ks' in net_config and 'd' in net_config and 'e' in net_config
