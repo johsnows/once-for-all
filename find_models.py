@@ -38,7 +38,7 @@ if cuda_available:
 else:
     print('Using CPU.')
 # ofa_network = ofa_net('ofa_mbv3_d234_e346_k357_w1.2', pretrained=True)
-ofa_network = ofa_net('ofa_resnet', pretrained=True)
+ofa_network = ofa_net('ofa_resnet50', pretrained=True)
 print('The OFA Network is ready.')
 if cuda_available:
     # path to the ImageNet dataset
