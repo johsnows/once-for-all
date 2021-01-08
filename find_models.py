@@ -118,7 +118,7 @@ for i in range(300):
         batch_size=250,
         device='cuda:0' if cuda_available else 'cpu')
     print("net_config:{} top1:{}".format(net_config, top1))
-    if top1>=77 and top1<=79:
+    if top1>=76 and top1<=77:
         top1s.append(top1)
         nets.append(net_config)
 
