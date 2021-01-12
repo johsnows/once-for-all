@@ -136,21 +136,21 @@ with open("ofa_nets_resnet_300.json", "r") as load_josn:
 #     if(net['r'][0] == 224):
 #         new_nets.append(net)
 # nets = copy.deepcopy(new_nets)
-len_nets = len(nets)
-
-top1s=[]
-for net in nets:
-    top1 = evaluate_ofa_resnet_subnet(
-        ofa_network,
-        imagenet_data_path,
-        net,
-        data_loader,
-        batch_size=250,
-        device='cuda:0' if cuda_available else 'cpu'
-    )
-    top1s.append(top1)
-
-np.save("ofa_nets_resnet_300_acc.npy", top1s)
+# len_nets = len(nets)
+#
+# top1s=[]
+# for net in nets:
+#     top1 = evaluate_ofa_resnet_subnet(
+#         ofa_network,
+#         imagenet_data_path,
+#         net,
+#         data_loader,
+#         batch_size=250,
+#         device='cuda:0' if cuda_available else 'cpu'
+#     )
+#     top1s.append(top1)
+#
+# np.save("ofa_nets_resnet_300_acc.npy", top1s)
 accs = np.load("ofa_nets_resnet_300_acc.npy", allow_pickle=True)
 print('accs', accs)
 
