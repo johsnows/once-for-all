@@ -140,7 +140,7 @@ len_nets = len(nets)
 
 top1s=[]
 for net in nets:
-    top1 = evaluate_ofa_subnet(
+    top1 = evaluate_ofa_resnet_subnet(
         ofa_network,
         imagenet_data_path,
         net,
