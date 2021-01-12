@@ -155,6 +155,12 @@ accs = np.load("ofa_nets_resnet_300_acc.npy", allow_pickle=True)
 print('accs', accs)
 
 def grow_with_space(nets, accs=None):
+    random_nets = copy.deepcopy(nets)
+    n = len(nets)
+    for i in range(n):
+        j = random.randint(0, n)
+        random_nets[j], random_nets[i] = random_nets[i], random_nets[j]
+    nets = copy.deepcopy(random_nets)
     best_acc = 0
     best_team = []
     best_team_acc = []
@@ -197,7 +203,6 @@ def random_ensemble(nets):
     acc_list = []
     space = []
     for k in range(20):
-        nets = []
         team = []
         i = random.randint(0, n-1)
         j = (i + random.randint(1, n-1)) % n
@@ -229,7 +234,7 @@ def random_ensemble(nets):
     space.append(best_acc)
     print('space:{}'.format(space))
 
-grow_with_space(nets, accs)
+# grow_with_space(nets, accs)
 random_ensemble(nets)
 
 
