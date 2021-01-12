@@ -158,7 +158,7 @@ def grow_with_space(nets, accs=None):
     random_nets = copy.deepcopy(nets)
     n = len(nets)
     for i in range(n):
-        j = random.randint(0, n)
+        j = random.randint(0, n-1)
         random_nets[j], random_nets[i] = random_nets[i], random_nets[j]
     nets = copy.deepcopy(random_nets)
     best_acc = 0
