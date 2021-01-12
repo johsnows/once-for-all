@@ -136,7 +136,6 @@ with open("ofa_nets_resnet_300.json", "r") as load_josn:
 #     if(net['r'][0] == 224):
 #         new_nets.append(net)
 # nets = copy.deepcopy(new_nets)
-# len_nets = len(nets)
 #
 # top1s=[]
 # for net in nets:
@@ -153,6 +152,7 @@ with open("ofa_nets_resnet_300.json", "r") as load_josn:
 # np.save("ofa_nets_resnet_300_acc.npy", top1s)
 accs = np.load("ofa_nets_resnet_300_acc.npy", allow_pickle=True)
 print('accs', accs)
+len_nets = len(nets)
 
 def grow_with_space(nets, accs=None):
     random_nets = copy.deepcopy(nets)
@@ -234,7 +234,7 @@ def random_ensemble(nets):
     space.append(best_acc)
     print('space:{}'.format(space))
 
-# grow_with_space(nets, accs)
-random_ensemble(nets)
+grow_with_space(nets, accs)
+# random_ensemble(nets)
 
 
