@@ -93,13 +93,13 @@ else:
 # else:
 #     print('Since GPU is not found in the environment, we skip all scripts related to ImageNet evaluation.')
 
-accuracy_predictor = AccuracyPredictor(
-    pretrained=True,
-    device='cuda:0' if cuda_available else 'cpu'
-)
-
-print('The accuracy predictor is ready!')
-print(accuracy_predictor.model)
+# accuracy_predictor = AccuracyPredictor(
+#     pretrained=True,
+#     device='cuda:0' if cuda_available else 'cpu'
+# )
+#
+# print('The accuracy predictor is ready!')
+# print(accuracy_predictor.model)
 
 # nets = []
 # top1s = []
@@ -128,29 +128,31 @@ print(accuracy_predictor.model)
 # fh = open(('ofa_nets_resnet_300.json'), 'w')
 # json.dump(nets, fh)
 # fh.close()
-# np.save("ofa_nets_resnet_300_acc.npy", top1s)
 
 with open("ofa_nets_resnet_300.json", "r") as load_josn:
     nets = json.load(load_josn)
 new_nets = []
-# for net in nets:
-#     if(net['r'][0] == 224):
-#         new_nets.append(net)
+for net in nets:
+    if(net['r'][0] == 224):
+        new_nets.append(net)
 nets = copy.deepcopy(new_nets)
 len_nets = len(nets)
-# accs = np.load("ofa_nets_resnet_300_acc.npy", allow_pickle=True)
-# print('accs', accs)
 
-# for net in nets:
-#     top1 = evaluate_ofa_subnet(
-#         ofa_network,
-#         imagenet_data_path,
-#         net,
-#         data_loader,
-#         batch_size=250,
-#         device='cuda:0' if cuda_available else 'cpu'
-#     )
-#     accs.append(top1)
+top1s=[]
+for net in nets:
+    top1 = evaluate_ofa_subnet(
+        ofa_network,
+        imagenet_data_path,
+        net,
+        data_loader,
+        batch_size=250,
+        device='cuda:0' if cuda_available else 'cpu'
+    )
+    top1s.append(top1)
+
+np.save("ofa_nets_resnet_300_acc.npy", top1s)
+accs = np.load("ofa_nets_resnet_300_acc.npy", allow_pickle=True)
+print('accs', accs)
 
 def grow_with_space(nets, accs=None):
     best_acc = 0
@@ -159,26 +161,7 @@ def grow_with_space(nets, accs=None):
     space_acc = []
     end = time.time()
     print('nets_number', len_nets)
-    accs = []
-    accs.append(
-            evaluate_ofa_resnet_subnet(
-            ofa_network,
-            imagenet_data_path,
-            nets[0],
-            data_loader,
-            batch_size=250,
-            device='cuda:0' if cuda_available else 'cpu')
-    )
     for i in range(1, len_nets):
-        accs.append(
-            evaluate_ofa_resnet_subnet(
-            ofa_network,
-            imagenet_data_path,
-            nets[i],
-            data_loader,
-            batch_size=250,
-            device='cuda:0' if cuda_available else 'cpu')
-        )
         for j in range(i):
             team = []
             team.append(nets[i])
@@ -246,7 +229,7 @@ def random_ensemble(nets):
     space.append(best_acc)
     print('space:{}'.format(space))
 
-grow_with_space(nets)
+grow_with_space(nets, accs)
 random_ensemble(nets)
 
 
