@@ -131,11 +131,11 @@ else:
 
 with open("ofa_nets_resnet_300.json", "r") as load_josn:
     nets = json.load(load_josn)
-new_nets = []
-for net in nets:
-    if(net['r'][0] == 224):
-        new_nets.append(net)
-nets = copy.deepcopy(new_nets)
+# new_nets = []
+# for net in nets:
+#     if(net['r'][0] == 224):
+#         new_nets.append(net)
+# nets = copy.deepcopy(new_nets)
 len_nets = len(nets)
 
 top1s=[]
