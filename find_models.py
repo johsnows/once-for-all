@@ -101,37 +101,37 @@ else:
 # print('The accuracy predictor is ready!')
 # print(accuracy_predictor.model)
 
-nets = []
-top1s = []
-for i in range(3000):
-    ofa_network.sample_active_subnet()
-    # subnet = ofa_network.get_active_subnet(preserve_weight=True)
-    # net_config = ofa_network.get_active_net_config()
-
-    # arch_manager = ArchManager()
-    # net_config = arch_manager.random_sample()
-    net_config = ofa_network.sample_active_subnet()
-    print(net_config)
-    top1 = evaluate_ofa_resnet_subnet(
-        ofa_network,
-        imagenet_data_path,
-        net_config,
-        data_loader,
-        batch_size=250,
-        device='cuda:0' if cuda_available else 'cpu')
-    print("net_config:{} top1:{}".format(net_config, top1))
-    if top1>=76.3 and top1<=75.8:
-        top1s.append(top1)
-        nets.append(net_config)
-
-np.save('ofa_nets_resnet_3000.npy', top1s)
-print('top1s', top1s)
-print('all config', nets)
-fh = open(('ofa_nets_resnet_3000.json'), 'w')
-json.dump(nets, fh)
-fh.close()
-'''
-with open("ofa_nets_resnet_300.json", "r") as load_josn:
+# nets = []
+# top1s = []
+# for i in range(3000):
+#     ofa_network.sample_active_subnet()
+#     # subnet = ofa_network.get_active_subnet(preserve_weight=True)
+#     # net_config = ofa_network.get_active_net_config()
+#
+#     # arch_manager = ArchManager()
+#     # net_config = arch_manager.random_sample()
+#     net_config = ofa_network.sample_active_subnet()
+#     print(net_config)
+#     top1 = evaluate_ofa_resnet_subnet(
+#         ofa_network,
+#         imagenet_data_path,
+#         net_config,
+#         data_loader,
+#         batch_size=250,
+#         device='cuda:0' if cuda_available else 'cpu')
+#     print("net_config:{} top1:{}".format(net_config, top1))
+#     if top1>=76.3 and top1<=75.8:
+#         top1s.append(top1)
+#         nets.append(net_config)
+#
+# np.save('ofa_nets_resnet_3000.npy', top1s)
+# print('top1s', top1s)
+# print('all config', nets)
+# fh = open(('ofa_nets_resnet_3000.json'), 'w')
+# json.dump(nets, fh)
+# fh.close()
+# '''
+with open("ofa_nets_resnet_3000.json", "r") as load_josn:
     nets = json.load(load_josn)
 # new_nets = []
 # for net in nets:
@@ -152,7 +152,7 @@ with open("ofa_nets_resnet_300.json", "r") as load_josn:
 #     top1s.append(top1)
 #
 # np.save("ofa_nets_resnet_300_acc.npy", top1s)
-accs = np.load("ofa_nets_resnet_300_acc.npy", allow_pickle=True)
+accs = np.load("ofa_nets_resnet_3000_acc.npy", allow_pickle=True)
 print('accs', accs)
 len_nets = len(nets)
 
@@ -236,8 +236,8 @@ def random_ensemble(nets):
     space.append(best_acc)
     print('space:{}'.format(space))
 
-# grow_with_space(nets, accs)
-# random_ensemble(nets)
-'''
+grow_with_space(nets, accs)
+random_ensemble(nets)
+# '''
 
 
