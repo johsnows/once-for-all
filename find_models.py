@@ -152,7 +152,7 @@ with open("ofa_nets_resnet_3000.json", "r") as load_josn:
 #     top1s.append(top1)
 #
 # np.save("ofa_nets_resnet_300_acc.npy", top1s)
-accs = np.load("ofa_nets_resnet_3000_acc.npy", allow_pickle=True)
+accs = np.load("ofa_nets_resnet_3000.npy", allow_pickle=True)
 print('accs', accs)
 len_nets = len(nets)
 
