@@ -101,6 +101,7 @@ accuracy_predictor = AccuracyPredictor(
 print('The accuracy predictor is ready!')
 print(accuracy_predictor.model)
 
+'''
 nets = []
 top1s = []
 for i in range(3000):
@@ -238,6 +239,5 @@ def random_ensemble(nets):
 
 grow_with_space(nets, accs)
 random_ensemble(nets)
-'''
 
 
